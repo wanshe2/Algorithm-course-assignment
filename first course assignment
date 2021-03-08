@@ -1,0 +1,124 @@
+#include<cstdio>
+#include<algorithm>
+#include<cmath>
+#include<cstring>
+using namespace std;
+
+/*
+10 30
+1 2 5
+1 3 7
+1 5 6
+1 6 20
+1 8 12
+1 9 23
+1 10 13
+2 4 15
+2 5 17
+2 6 8
+2 7 19
+2 9 37
+3 5 21
+3 4 33
+3 8 29
+3 7 12
+3 10 18
+4 7 16
+4 10 39
+4 6 26
+5 7 26
+5 9 7
+5 10 17
+6 7 18
+6 8 24
+6 10 16
+7 8 22
+7 10 19
+8 9 7
+9 10 28
+*/
+int head[110], ecnt = 0;
+struct Edge {
+	int from, to, nxt, val;
+	Edge() {};
+	Edge(int from, int to, int nxt, int val) : from(from), to(to), nxt(nxt), val(val) {};
+
+	bool operator < (const Edge& a) const {
+		return val < a.val;
+	}
+
+}edge[110 * 10];
+inline void add(int u, int v, int w) {
+	edge[++ecnt] = { u, v, head[u], w }; head[u] = ecnt;
+	edge[++ecnt] = { v, u, head[v], w }; head[v] = ecnt;
+}
+
+bool vis[110];
+int dis[110];
+int prim(int s, int n) {
+	printf("prim: start is %d\n", s);
+	int sum = 0;
+	memset(dis, 0x3f, sizeof dis);
+	for (int i = head[s]; i; i = edge[i].nxt) {
+		dis[edge[i].to] = edge[i].val;
+	}
+	vis[s] = 1;
+	while (1) {
+		int k = -1, minn = 0x3f3f3f3f;
+		for (int i = 1; i <= n; ++i) {
+			if (vis[i])	continue;
+			if (minn > dis[i]) {
+				minn = dis[i]; k = i;
+			}
+		}
+
+		if (k == -1)	break;
+		vis[k] = 1; sum += minn;
+		printf("%d %d\n", k, minn);
+		for (int i = head[k]; i; i = edge[i].nxt) {
+			if (vis[edge[i].to])	continue;
+			dis[edge[i].to] = min(dis[edge[i].to], edge[i].val);
+		}
+	}
+	return sum;
+}
+
+int fa[110];
+int find(int x) {
+	if (fa[x] != x)	fa[x] = find(fa[x]);
+	return fa[x];
+}
+
+void union_(int x, int y) {
+	int fx = find(x), fy = find(y);
+	if (fx != fy)	fa[x] = y;
+}
+
+int kruskal(int n) {
+	puts("kruskal:");
+	sort(edge, edge + ecnt);
+	int cnt = 0, sum = 0;
+	for (int i = 1; i <= n; ++i)	fa[i] = i;
+	for (int i = 0; i < ecnt; ++i) {
+		if (find(edge[i].to) != find(edge[i].from)) {
+			printf("%d %d %d\n", edge[i].from, edge[i].to, edge[i].val);
+			cnt++; sum += edge[i].val;
+			union_(edge[i].to, edge[i].from);
+		}
+
+		if (cnt == n - 1)	break;
+	}
+	return sum;
+}
+
+int main() {
+	int n, m; scanf("%d %d", &n, &m);
+	for (int i = 0; i < m; ++i) {
+		int u, v, w; 
+		scanf("%d %d %d", &u, &v, &w);
+		add(u, v, w);
+	}
+	
+	printf("%d\n", prim(1, n));
+	printf("%d\n", kruskal(n));
+}
