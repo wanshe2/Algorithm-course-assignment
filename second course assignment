@@ -1,0 +1,114 @@
+Floyd算法：
+/*
+4 8
+1 2 2
+1 3 6
+1 4 4
+2 3 3
+3 1 7
+3 4 1
+4 1 5
+4 3 12
+*/
+
+int len[1010][1001];
+
+void floyd() {
+	for (int k = 1; k <= n; ++k) {
+		for (int i = 1; i <= n; ++i) {
+			for (int j = 1; j <= n; ++j) {
+				len[i][j] = min(len[i][j], len[i][k] + len[k][j]);
+			}
+		}
+	}
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= n; ++j) {
+			printf("%d%c", len[i][j], j == n ? '\n' : ' ');
+		}
+	}
+}
+
+signed main() {
+	scanf("%d %d", &n, &m);
+	for (int i = 1; i <= n; ++i) {
+		for (int j = 1; j <= n; ++j) {
+			len[i][j] = 0x3f3f3f3f;
+		}
+		len[i][i] = 0;
+	}
+	for (int i = 0; i < m; ++i) {
+		int u, v, w;
+		scanf("%d %d %d", &u, &v, &w);
+		len[u][v] = w;
+	}
+	floyd();
+	return 0;
+}
+
+
+
+
+dijkstra:
+/*
+8 11
+a b 1
+b d 2
+c a 2
+d c 1
+d f 8
+e d 2
+e g 2
+f e 2
+g f 3
+g h 3
+h f 2
+*/
+const int maxn = 1e5 + 10;
+int head[maxn];
+int to[maxn], nxt[maxn], val[maxn];
+int ecnt = 0;
+void add(int u, int v, int w) {
+	to[++ecnt] = v; nxt[ecnt] = head[u]; val[ecnt] = w; head[u] = ecnt;
+}
+
+int dis[maxn];
+bool vis[maxn];
+int n, m;
+void dijkstra(int s) {
+	memset(vis, 0, sizeof vis);
+	memset(dis, 0x3f, sizeof dis);
+	for (int i = head[s]; i; i = nxt[i]) dis[to[i]] = val[i];
+	vis[s] = 1; dis[s] = 0;
+	for (int i = 0; i < n - 1; ++i) {
+		int k = -1, minn = 0x3f3f3f3f;
+		for (int j = 0; j < n; ++j) {
+			if (vis[j])	continue;
+			if (dis[j] < minn) {
+				minn = dis[j]; k = j;
+			}
+		}
+
+		if (k == -1)	break;
+
+		vis[k] = 1;
+		for (int i = head[k]; i; i = nxt[i]) {
+			if (vis[to[i]])	continue;
+			dis[to[i]] = min(dis[to[i]], dis[k] + val[i]);
+		}
+	}
+}
+
+signed main() {
+	scanf("%d %d", &n, &m); getchar();
+	for (int i = 0; i < m; ++i) {
+		char u, v;
+		int w; scanf("%c %c %d", &u, &v, &w);
+		getchar();
+		add(int(u - 'a'), int(v - 'a'), w);
+	}
+
+	int s = 'a' - 'a';
+	dijkstra(s);
+	
+	printf("a - h 的距离为:%d\n", dis[int('h' - 'a')]);
+}
