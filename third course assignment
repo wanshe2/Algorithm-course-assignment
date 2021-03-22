@@ -1,0 +1,34 @@
+#include<cstdio>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+int t[maxn];
+
+int On_check(int *t, int n, int x){
+	// 遍历查找
+	for(int i = 1; i <= n; ++ i)	if(t[i] == x) return i;
+	return 0;
+}
+
+int Ologn_check(int *t, int n, int x){
+	//二分查找 
+	int l = 1, r = n;
+	while(l < r){
+		int mid = l + r >> 1;
+		if(t[mid] == x)	return mid;
+		if(t[mid] < x)	r = mid - 1;
+		else l = mid + 1;
+	}
+	return 0;
+}
+
+signed main(){
+	int n; scanf("%d", &n);
+	for(int i = 1; i <= n; ++ i)	scanf("%d", &t[i]);
+	int x; scanf("%d", &x);
+	printf("遍历查找下标：%d\n", On_check(t, n, x));
+	printf("二分查找下标：%d\n", Ologn_check(t, n, x));
+	
+	
+	return 0;
+}
