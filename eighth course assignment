@@ -1,0 +1,86 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e5 + 10;
+typedef long long ll;
+
+//dp[l][r] = dp[l][k] + dp[k+1][r] + a[l-1] * a[k] * a[r] 
+int n;
+int dp[1010][1010];
+int a[maxn], s[1010][1010];
+void matrix_chain_mul(){
+	puts("过程:");
+	memset(dp, 0x3f, sizeof dp);
+	printf("区间长 = %d\n", 1);
+	for(int i = 1; i <= n; ++ i) {
+		dp[i][i] = 0; s[i][i] = i;
+		printf("m[%d, %d] = %d  s[%d, %d] = %d\n", i, i, dp[i][i], i, i, s[i][i]);
+	}
+	puts("");
+	for(int i = 2; i <= n; ++ i) {
+		printf("区间长 = %d\n", i);
+		for(int j = i; j <= n; ++ j) {
+			int l = j - i + 1;
+			for(int k = s[l][j - 1]; k <= s[l + 1][j]; ++ k) {
+				int tmp = dp[l][k] + dp[k + 1][j] + a[l - 1] * a[k] * a[j];
+				if(dp[l][j] > tmp){
+					dp[l][j] = tmp;
+					s[l][j] = k; 
+				}
+			}
+			printf("m[%d, %d] = %-6d  s[%d, %d] = %d\n", l, j, dp[l][j], l, j, s[l][j]);
+		}
+		puts("");
+	} 
+}
+
+struct node{
+	int pos, op;
+	node(){
+	}
+	node(int pos, int op) : pos(pos), op(op){
+	}
+	bool operator < (const node &a) const {
+		if(pos != a.pos)	return pos < a.pos;
+		return op < a.op;
+	}
+}node[maxn];
+
+int cnt = 0;
+void dfs(int l, int r) {
+	if(l >= r)	return ;
+	node[cnt ++] = {l, -1};
+	node[cnt ++] = {r, 1};
+	dfs(l, s[l][r]);
+	dfs(s[l][r] + 1, r);
+}
+
+signed main(){
+	scanf("%d", &n);
+	for(int i = 0; i <= n; ++ i) scanf("%d", &a[i]);	
+	matrix_chain_mul(); 
+	printf("m[%d, %d] = %d\n", 1, n, dp[1][n]);
+	cnt = 0;
+	for(int i = 1; i <= n; ++ i)	node[cnt ++] = {i, 0};
+	dfs(1, n);
+	sort(node, node + cnt);
+	puts("实际算式:");
+	for(int i = 1; i < cnt - 1; ++ i) {
+		if(node[i].op == -1) printf("(");
+		else if(node[i].op == 0) printf("A%d", node[i].pos);
+		else printf(")");
+	}
+	puts("");
+	return 0;
+}
+
+/*
+5
+30 35 15 5 10 20
+
+3
+10 100 5 50
+
+7
+25 30 50 15 70 45 5 25
+*/
