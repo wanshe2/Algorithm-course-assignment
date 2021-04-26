@@ -34,25 +34,14 @@ void matrix_chain_mul(){
 	} 
 }
 
-struct node{
-	int pos, op;
-	node(){
-	}
-	node(int pos, int op) : pos(pos), op(op){
-	}
-	bool operator < (const node &a) const {
-		if(pos != a.pos)	return pos < a.pos;
-		return op < a.op;
-	}
-}node[maxn];
-
-int cnt = 0;
 void dfs(int l, int r) {
-	if(l >= r)	return ;
-	node[cnt ++] = {l, -1};
-	node[cnt ++] = {r, 1};
-	dfs(l, s[l][r]);
-	dfs(s[l][r] + 1, r);
+	if(l == r) printf("A%d", l);
+	else {
+		printf("(");
+		dfs(l, s[l][r]);
+		dfs(s[l][r] + 1, r);
+		printf(")");
+	}
 }
 
 signed main(){
@@ -60,16 +49,8 @@ signed main(){
 	for(int i = 0; i <= n; ++ i) scanf("%d", &a[i]);	
 	matrix_chain_mul(); 
 	printf("m[%d, %d] = %d\n", 1, n, dp[1][n]);
-	cnt = 0;
-	for(int i = 1; i <= n; ++ i)	node[cnt ++] = {i, 0};
-	dfs(1, n);
-	sort(node, node + cnt);
 	puts("实际算式:");
-	for(int i = 1; i < cnt - 1; ++ i) {
-		if(node[i].op == -1) printf("(");
-		else if(node[i].op == 0) printf("A%d", node[i].pos);
-		else printf(")");
-	}
+	dfs(1, n);
 	puts("");
 	return 0;
 }
