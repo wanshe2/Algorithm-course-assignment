@@ -1,0 +1,71 @@
+#include<bits/stdc++.h>
+
+using namespace std;
+const int maxn = 1e3 + 10;
+
+int n, top = 0;
+int a[maxn], stk[maxn], lis[maxn];
+int m;
+int lcs[maxn][maxn], b[maxn];
+signed LCS(){
+	scanf("%d %d", &n, &m);
+	for(int i = 1; i <= n; ++ i) 	scanf("%d", &a[i]);
+	for(int i = 1; i <= m; ++ i)	scanf("%d", &b[i]);
+	
+	for(int i = 1; i <= n; ++ i) {
+		printf("i -> %d\n", i); 
+		for(int j = 1; j <= m; ++ j) {
+			if(a[i] == b[j]) lcs[i][j] = lcs[i - 1][j - 1] + 1;
+			else lcs[i][j] = max(lcs[i - 1][j], lcs[i][j - 1]);
+			if(a[i] == b[j])	printf("\tj -> %d\n\ta[%d] == b[%d] --> LCS[%d, %d] = %d\n", j, i, j, i, j, lcs[i][j]);
+			else printf("\tj -> %d\n\ta[%d] != b[%d] --> LCS[%d, %d] = %d\n", j, i, j, i, j, lcs[i][j]);
+		}
+		puts("");
+	}
+	for(int nx = n, ny = m; nx && ny; --nx, --ny) {
+		if(a[nx] == b[ny]) stk[top ++] = a[nx];
+		else if(lcs[nx - 1][ny] > lcs[nx][ny - 1]) ++ny;
+		else ++nx;
+	}
+	puts("最长公共子序列为:"); 
+	for(int i = top - 1; i >= 0; -- i)	printf("%d%c", stk[i], " \n"[i == 0]); 
+	return 0;
+}
+
+/*
+test input:
+6 8
+1 2 3 6 2 8
+1 8 6 3 1 2 8 2
+*/
+
+int pack[maxn], get_[maxn], w[maxn], val[maxn];//w->wight  val-value
+signed Backpack() {
+	scanf("%d %d", &n, &m);
+	for(int i = 1; i <= n; ++ i)	scanf("%d %d", &w[i], &val[i]);
+	//for(int i = 0; i < n; ++ i) for(int j = w[i]; j <= m; ++ j) pack[j] = max(pack[j], pack[j - w[i]] + val[i]);
+	for(int i = 1; i <= n; ++ i) for(int j = w[i]; j <= m; ++ j) if(pack[j] < pack[j - w[i]] + val[i])	pack[j] = pack[j - w[i]] + val[i], get_[j] = i; 
+	printf("最多可以装%d的价值\n", pack[m]);
+	puts("拿的物品:"); 
+	for(int now = m, del = get_[now]; del; now -= w[del], del = get_[now]) printf("物品%d ", del);
+	puts("");
+	return 0;
+}
+
+/*
+
+test input:
+5 16
+11 15
+3 7
+9 21
+5 14
+2 3
+
+*/
+
+signed main(){
+	//LCS();
+	Backpack();
+	return 0; 
+}
