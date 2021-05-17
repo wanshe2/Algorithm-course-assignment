@@ -1,0 +1,9 @@
+int a[maxn], c;
+signed main() {
+	scanf("%d %d", &n, &c);
+	for(int i = 0; i < n; ++ i) scanf("%d", &a[i]);
+	sort(a, a + n); int i, tot;
+	for(i = 0, tot = 0; i < n && tot < c; tot += a[i++]); 
+	printf("%d %d\n", i - 1, tot);
+	return 0;
+}
