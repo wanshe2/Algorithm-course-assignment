@@ -1,0 +1,48 @@
+#include <iostream>
+using namespace std;
+#include<cstring>
+#include<math.h>
+const int maxn = 1e5 + 10;
+int sum=0;
+bool vis[maxn];
+int x[maxn];
+int head[maxn], to[maxn], nxt[maxn], ecnt = 0;
+int n, m, k;
+inline void add(int u, int v) {
+	to[++ecnt] = v; nxt[ecnt] = head[u]; head[u] = ecnt;
+	to[++ecnt] = u; nxt[ecnt] = head[v]; head[v] = ecnt;
+} 
+bool OK(int t) {
+	for(int i = head[t]; i; i = nxt[i]) 
+		if(x[to[i]] == x[t])	return false;
+	return true;
+}
+void getsum(int i) {
+    if(i>n) {
+		printf("case: %d\n", ++sum);
+        for(int k=1;k<=n;k++)
+        	printf("point%d -> color%d\n", k, x[k]);
+        puts("");
+        return ;
+    }
+	
+	for(int k=1;k<=m;k++){	
+		x[i]=k; 
+        if(OK(i))	getsum(i+1);
+        x[i]=0;
+    }
+    return ;
+}
+
+int main() {
+	scanf("%d %d %d", &n, &k, &m);
+    int x,y;
+    for(int i=1;i<=k;i++){
+        scanf("%d %d", &x, &y);
+		add(x, y); 
+    }
+    getsum(1);
+    if(sum)	printf("%d\n", sum);
+    else puts("NO");
+    return 0;
+}
