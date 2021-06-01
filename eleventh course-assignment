@@ -1,0 +1,46 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 1e5 + 10;
+int n, m;
+int stone[110]; 
+
+struct node{
+	int val, op;
+	node(int val = 0, int op = 0) : val(val), op(op) {}
+	bool operator < (const node &a) const {
+		return val > a.val; 
+	}
+};
+int a[maxn];
+string haf[maxn];
+vector<int> v[maxn];
+void dfs(int now, string s, char ch = '1') {
+	if(now < n)	haf[now] = s;
+	for(auto it : v[now]) 	dfs(it, s + ch--);
+}
+/*
+8
+5 5 10 10 10 15 20 25
+
+*/
+void run() {
+	priority_queue<node> q;
+	scanf("%d", &n);
+	for(int i = 0; i < n; ++ i)	{
+		scanf("%d", &a[i]); 
+		q.push({a[i], i}); 
+	}
+	int sz = n;
+	while(q.size() > 1) {
+		node top1 = q.top();
+		v[sz].push_back(top1.op);
+		q.pop();
+		node top2 = q.top();
+		v[sz].push_back(top2.op);
+		q.pop();
+		q.push({top1.val + top2.val, sz++});
+	} 
+	dfs(q.top().op, "");
+	for(int i = 0; i < n; ++ i)	cout << a[i] << " -> " << haf[i] << endl;
+	return ;
+}
