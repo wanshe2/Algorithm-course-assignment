@@ -1,0 +1,45 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int maxn = 1e3 + 10;
+
+int tim[maxn]; //每个任务花费的时间 
+int dp[maxn][maxn], put[maxn][maxn];//put[] 存放的是拿取了哪些任务 
+bool vis[maxn]; //vis[] = 1 表示是第一台机器的任务， = 0是第二台机器的任务 
+signed main() {
+	int n, sum = 0; 
+	scanf("%d", &n);
+	
+	for(int i = 1; i <= n; ++ i)	{
+		scanf("%d", &tim[i]);
+		sum += tim[i];
+	}
+	
+	int V = sum / 2;//背包大小为sum/2 
+	for(int i = 1; i <= n; ++ i) {//01背包 
+		for(int j = V; j >= tim[i]; -- j) {
+			dp[i][j] = dp[i - 1][j]; 
+			if(dp[i - 1][j - tim[i]] + tim[i] > dp[i][j]) {
+				dp[i][j] = dp[i - 1][j - tim[i]] + tim[i];
+				put[i][j] = i;
+			}
+		} 
+	}
+	
+	printf("时间调度方案：\n");
+	printf("第一台机器：%d\n", dp[n][V]);
+	int now = V, i = n;	
+	
+	while(now) {
+		if(put[i][now] != 0)	printf("任务%d ", put[i][now]);
+		vis[put[i][now]] = 1;
+		now -= tim[put[i][now]];
+		i --;
+	} 
+	puts("");
+	puts(""); 
+	printf("第二台机器：%d\n", sum - dp[n][V]);
+	for(int i = 1; i <= n; ++ i) 
+		if(!vis[i])	printf("任务%d ", i);
+	puts("");
+	return 0;
+}
