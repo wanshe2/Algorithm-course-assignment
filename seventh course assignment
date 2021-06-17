@@ -4,28 +4,34 @@ using namespace std;
 const int maxn = 1e5 + 10;
 typedef long long ll;
 
-int n, m;
-int c[maxn], w[maxn], dp[maxn];
-void backpack_01(){
-	memset(dp, 0, sizeof dp);
-	for(int i = 0; i < n; ++ i) {
-		printf("第%d个项目: cost = %d 收益 = %d\n", i + 1, c[i], w[i]);
-		for(int j = m; j >= c[i]; -- j) {
-			printf("dp[%d] = %d -> ", j, dp[j]);
-			dp[j] = max(dp[j], dp[j - c[i]] + w[i]);
-			printf("dp[%d] = %d\n", j, dp[j]);
-		}
-		puts("");
+int pro[1000][1000]; 
+int dp[1000][1000];
+int path[1000][1000];//记录最优解 
+signed main() {
+	int n, m; scanf("%d %d", &n, &m);//n个项目，m万的投资 
+	for(int i = 1; i <= n; ++ i) {
+		for(int j = 1; j <= m; ++ j) {
+			scanf("%d", &pro[i][j]);
+		} 
 	}
-}
-
-signed main(){
-	scanf("%d %d", &n, &m);
-	//n为项目个数，m为资金	
-	for(int i = 0; i < n; ++ i)	
-		scanf("%d %d", &c[i], &w[i]);
-	//c[i]为花费，w[i]为收益 
-	backpack_01();
-	printf("最大收益为：%d\n", dp[m]); 
+	
+	for(int i = 1; i <= n; ++ i) {
+		for(int j = m; j >= 0; -- j) {
+			for(int k = j; k >= 0; -- k) { 
+				if(dp[i][j] < dp[i - 1][j - k] + pro[i][k]){
+					dp[i][j] = dp[i - 1][j - k] + pro[i][k];
+					path[i][j] = k;
+				}
+			}
+		}
+	}
+	
+	printf("最大收益为：%d\n", dp[n][m]);
+	int now = m, i = n;
+	while(now) {
+		int p = path[i][now];
+		if(p != 0)	printf("第%d个项目投资%d万元\n", i, p);
+		now -= p; i --;
+	}
 	return 0;
 } 
