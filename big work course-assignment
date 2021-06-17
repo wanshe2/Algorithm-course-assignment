@@ -16,18 +16,20 @@ signed main() {
 	
 	int V = sum / 2;//背包大小为sum/2 
 	for(int i = 1; i <= n; ++ i) {//01背包 
-		for(int j = V; j >= tim[i]; -- j) {
-			dp[i][j] = dp[i - 1][j]; 
+		for(int j = V; j >= 0; -- j) {
+			dp[i][j] = dp[i - 1][j];
+			if(j < tim[i])	continue; 
 			if(dp[i - 1][j - tim[i]] + tim[i] > dp[i][j]) {
 				dp[i][j] = dp[i - 1][j - tim[i]] + tim[i];
 				put[i][j] = i;
 			}
-		} 
+		}  
 	}
 	
+	printf("%d\n", V);
 	printf("时间调度方案：\n");
 	printf("第一台机器：%d\n", dp[n][V]);
-	int now = V, i = n;	
+	int now = dp[n][V], i = n;	
 	
 	while(now) {
 		if(put[i][now] != 0)	printf("任务%d ", put[i][now]);
